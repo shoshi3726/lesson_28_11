@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 
-const { auth } = require("../middlewares/auth");
+const { auth,authAdmin } = require("../middlewares/auth");
 const { UserModel, validUser, validLogin, createToken } = require("../models/userModel")
 const jwt = require("jsonwebtoken");
 
@@ -27,6 +27,18 @@ router.get("/myEmail", auth, async (req, res) => {
     console.log(err)
     res.status(500).json({ msg: "err", err })
   }
+})
+
+
+router.get("/usersList", authAdmin , async(req,res) => {
+  try{
+    let data = await UserModel.find({},{password:0});
+    res.json(data)
+  }
+  catch(err){
+    console.log(err)
+    res.status(500).json({msg:"err",err})
+  }  
 })
 
 // 3
@@ -107,7 +119,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ msg: "Password or email is worng ,code:2" });
     }
     // מייצרים טוקן שמכיל את האיידי של המשתמש
-    let newToken = createToken(user._id);
+    let newToken = createToken(user._id,user.role);
     res.json({ token: newToken });
   }
   catch (err) {
