@@ -1,5 +1,3 @@
-const { default: axios } = require("axios");
-const { application, json } = require("express");
 
 const init =()=>{
     doApi();
